@@ -1,0 +1,285 @@
+openapi: 3.0.0
+info:
+  version: 0.0.1
+  title: ICF task
+  description: Own Api on top of Artic API
+servers:
+  - url: https://rent-a-system.com/projects/icf
+
+security:
+  - bearerAuth: []  
+
+paths:
+  /auth:
+    get:
+      summary: Authenticate user
+      parameters:
+        - name: name
+          in: header
+          required: true
+          description: user name
+          schema:
+            type: string
+        - name: password
+          in: header
+          required: true
+          description: password
+          schema:
+            type: string
+      responses:
+        200:    
+          description: Returns token
+          content:
+            application/json:
+              schema: 
+                type: object
+                items: 
+                  $ref: '#/components/schemas/Token'
+        401:    
+          description: Returns authorization error 
+          content:
+            application/json:
+              schema: 
+                type: object
+                items: 
+                  $ref: '#/components/schemas/Error'
+
+  /artwork/{id}:
+    get:
+      security:
+        - bearerAuth: []
+      summary: Get artwork by id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: artwork id
+          schema:
+            type: string
+      responses:
+        200:    
+          description: Returns artwork
+          content:
+            application/json:
+              schema: 
+                type: object
+                items: 
+                  $ref: '#/components/schemas/Artwork'
+        400:    
+          description: Returns validation error 
+          content:
+            application/json:
+              schema: 
+                type: object
+                items: 
+                  $ref: '#/components/schemas/Error'
+        401:    
+          description: Returns authorization error 
+          content:
+            application/json:
+              schema: 
+                type: object
+                items: 
+                  $ref: '#/components/schemas/Error'
+        404:    
+          description: Returns file not found error
+          content:
+            application/json:
+              schema: 
+                type: object
+                items: 
+                  $ref: '#/components/schemas/Error'
+
+  /artworks/{page}/{limit}:
+    get:
+      security:
+        - bearerAuth: []
+      summary: Get artworks paginated
+      parameters:
+        - name: page
+          in: path
+          required: true
+          description: page number
+          schema:
+            type: string
+        - name: limit
+          in: path
+          required: true
+          description: items on page
+          schema:
+            type: string
+      responses:
+        200:    
+          description: Returns artworks
+          content:
+            application/json:
+              schema: 
+                type: object
+                items: 
+                  $ref: '#/components/schemas/Artworks'
+        400:    
+          description: Returns validation error 
+          content:
+            application/json:
+              schema: 
+                type: object
+                items: 
+                  $ref: '#/components/schemas/Error'
+        401:    
+          description: Returns authorization error 
+          content:
+            application/json:
+              schema: 
+                type: object
+                items: 
+                  $ref: '#/components/schemas/Error'
+
+  /buy-artwork/{id}:
+    post:
+      security:
+        - bearerAuth: []
+      summary: Purchase artwork by id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: artwork id
+          schema:
+            type: string
+      responses:
+        200:    
+          description: Returns artwork purchased
+          content:
+            application/json:
+              schema: 
+                type: object
+                items: 
+                  $ref: '#/components/schemas/UserArtwork'
+        400:    
+          description: Returns validation error 
+          content:
+            application/json:
+              schema: 
+                type: object
+                items: 
+                  $ref: '#/components/schemas/Error'
+        401:    
+          description: returns authorization error 
+          content:
+            application/json:
+              schema: 
+                type: object
+                items: 
+                  $ref: '#/components/schemas/Error'
+        404:    
+          description: Returns file not found error
+          content:
+            application/json:
+              schema: 
+                type: object
+                items: 
+                  $ref: '#/components/schemas/Error'
+        405:    
+          description: Returns artwork already sold error
+          content:
+            application/json:
+              schema: 
+                type: object
+                items: 
+                  $ref: '#/components/schemas/Error'
+
+  /user-artworks:
+    get:
+      security:
+        - bearerAuth: []
+      summary: Get user artworks
+      responses:
+        200:    
+          description: returns array of artworks
+          content:
+            application/json:
+              schema: 
+                type: object
+                items: 
+                  $ref: '#/components/schemas/UserArtworks'
+
+components:
+  securitySchemes:
+    bearerAuth:  
+      type: http
+      scheme: bearer
+      bearerFormat: JWT   
+
+  schemas:
+    Artworks:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Artwork"
+
+    Artwork:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        thumbnail:
+          type: string
+        artist_title:
+          type: string
+        image_id:
+          type: string
+
+    UserArtworks:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserArtwork"
+
+    UserArtwork:
+      type: object
+      properties:
+        id:
+          type: string
+        user_id:
+          type: string
+        artwork_id:
+          type: string
+        title:
+          type: string
+        artist_title:
+          type: string
+        thumbnail:
+          type: string
+        image_id:
+          type: string
+
+    Token:
+      type: object
+      properties:
+        success:
+          type: boolean
+        token:
+          type: string
+
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+        error:
+          type: string
+
+
+
+
+  

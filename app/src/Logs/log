@@ -1,0 +1,10 @@
+{
+   "require": {
+       "firebase/php-jwt": "^6.4",
+       "illuminate/database": "^8.83",
+       "pecee/simple-router": "5.2.0.1",
+       "guzzlehttp/guzzle": "^7.0",
+       "monolog/monolog": "^2.9"
+   }
+}
+[2023-04-07T08:08:43.534250+00:00] mono.DEBUG: Signature verification failed [] []

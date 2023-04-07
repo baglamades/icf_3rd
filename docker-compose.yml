@@ -1,0 +1,50 @@
+version: '3.3'
+services:
+  api:
+    build: 
+      context: ./app
+      dockerfile: ../Dockerfile
+    container_name: icf-3rdp
+    depends_on:
+      - db
+    volumes:
+      - ./app:/var/www/html/
+      - ./.vscode/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+      - ./.vscode/error_reporting.ini:/usr/local/etc/php/conf.d/error_reporting.ini   
+    ports:
+      - 80:80
+    environment:
+      - ALLOW_OVERRIDE=true
+
+  composer:
+    restart: 'no'
+    image: composer/composer
+    command: install
+    volumes:
+      - ./app:/app
+
+  db:
+    container_name: mysql8
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    volumes:
+      - ./app/sql:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: icf
+      MYSQL_USER: icf_usr
+      MYSQL_PASSWORD: icf_pwd
+    ports:
+      - 3307:3306
+
+  phpmyadmin:
+    depends_on:
+      - db
+    image: phpmyadmin/phpmyadmin
+    environment:
+      MYSQL_DATABASE: icf
+      MYSQL_USER: icf_usr
+      MYSQL_PASSWORD: icf_pwd
+    ports:
+      - 8001:80

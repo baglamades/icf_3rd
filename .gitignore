@@ -1,0 +1,4 @@
+.vscode/*
+app/log
+app/vendor
+app/test/results/*
